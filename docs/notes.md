@@ -48,8 +48,62 @@ docker run -p 3000:3000 railsapp
 docker run --rm railsapp bin/rails -T
 ```
 
+## Docker Compose
+
+```bash
+# bring up local docker nodes
+docker-compose up
+
+# bring up local docker nodes (detached mode)
+docker-compose up -d
+
+# shut down local docker nodes
+docker-compose stop
+
+# stop specific service (web)
+docker-compose stop web
+
+# start specific service (web)
+docker-compose start web
+
+# restart service
+docker-compose restart web
+
+# view container logs
+docker-compose logs -f web
+
+# run single command in container
+docker-compose run --rm web echo 'ran a different command'
+
+# run command on existing container
+docker-compose exec web ls
+
+# build container
+docker-compose build web
+
+# cleanup containers/images/resources
+docker-compose rm
+```
+
 ## Prune Images
 
 ```bash
+# remove unused data
+docker system prune
+
+# remove unused data, all images, do not prompt for confirmation
 docker system prune -af
+```
+
+## Redis
+
+```bash
+# bring up redis service
+docker-compose up -d redis
+
+# view redis logs
+docker-compose logs redis
+
+# view networks
+docker network ls
 ```
