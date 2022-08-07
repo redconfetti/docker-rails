@@ -1,0 +1,3 @@
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=tyk5sLAECepqdS
+POSTGRES_DB=docker-rails_development

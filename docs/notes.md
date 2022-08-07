@@ -95,15 +95,28 @@ docker system prune
 docker system prune -af
 ```
 
-## Redis
+## Redis and Postgres
 
 ```bash
 # bring up redis service
 docker-compose up -d redis
 
+# bring up database service (postgres)
+docker-compose up -d database
+
 # view redis logs
 docker-compose logs redis
 
+# view postgres logs
+docker-compose logs database
+
 # view networks
 docker network ls
+```
+
+## Volumes
+
+```bash
+# list volumes
+docker volume ls
 ```
