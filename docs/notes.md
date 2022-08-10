@@ -120,3 +120,12 @@ docker network ls
 # list volumes
 docker volume ls
 ```
+
+## Alternative Build
+
+The Rails application could have been created as an API-only app with Webpacker
+setup for the front-end.
+
+```bash
+rails new myapp --webpack=react --api --skip-hotwire --skip-jbuilder --skip-asset-pipeline --database=postgresql
+```

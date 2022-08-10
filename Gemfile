@@ -41,6 +41,9 @@ gem "bootsnap", require: false
 # Redis
 gem 'redis', '~> 4.7.1'
 
+# Webpacker
+gem 'webpacker', '~> 5.4'
+
 # Use Sass to process CSS
 # gem "sassc-rails"
 
