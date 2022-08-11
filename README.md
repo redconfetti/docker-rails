@@ -72,7 +72,8 @@ Managing production deployments of your application can be [orchestrated] using
 ## Common CLI Commands
 
 ```bash
-# Rebuild and recreate for 'bundle install'
+# Build and recreate for 'bundle install'
+docker-compose build web
 docker-compose stop web
 docker-compose up -d --force-recreate web
 
