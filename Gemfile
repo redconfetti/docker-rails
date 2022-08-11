@@ -58,6 +58,8 @@ group :development, :test do
   gem 'byebug', platforms: %i[ mri mingw x64_mingw ]
 
   gem 'rspec-rails', '~> 5.1.2'
+
+  gem 'capybara', '~> 3.37'
 end
 
 group :development do

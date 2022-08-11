@@ -72,8 +72,15 @@ Managing production deployments of your application can be [orchestrated] using
 ## Common CLI Commands
 
 ```bash
+# Rebuild and recreate for 'bundle install'
+docker-compose stop web
+docker-compose up -d --force-recreate web
+
 # Run rspec tests
 docker-compose exec web bin/rails spec
+
+# Run Rspec system (integration) tests
+docker-compose exec web rspec spec/system
 ```
 
 ## Managing Containers
