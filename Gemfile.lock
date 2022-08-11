@@ -70,11 +70,10 @@ GEM
     bootsnap (1.13.0)
       msgpack (~> 1.2)
     builder (3.2.4)
+    byebug (11.1.3)
     concurrent-ruby (1.1.10)
     crass (1.0.6)
-    debug (1.6.1)
-      irb (>= 1.3.6)
-      reline (>= 0.3.1)
+    diff-lcs (1.5.0)
     digest (3.1.0)
     erubi (1.11.0)
     globalid (1.0.0)
@@ -84,9 +83,6 @@ GEM
     importmap-rails (1.1.5)
       actionpack (>= 6.0.0)
       railties (>= 6.0.0)
-    io-console (0.5.11)
-    irb (1.4.1)
-      reline (>= 0.3.0)
     jbuilder (2.11.5)
       actionview (>= 5.0.0)
       activesupport (>= 5.0.0)
@@ -154,8 +150,23 @@ GEM
       zeitwerk (~> 2.5)
     rake (13.0.6)
     redis (4.7.1)
-    reline (0.3.1)
-      io-console (~> 0.5)
+    rspec-core (3.11.0)
+      rspec-support (~> 3.11.0)
+    rspec-expectations (3.11.0)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-mocks (3.11.1)
+      diff-lcs (>= 1.2.0, < 2.0)
+      rspec-support (~> 3.11.0)
+    rspec-rails (5.1.2)
+      actionpack (>= 5.2)
+      activesupport (>= 5.2)
+      railties (>= 5.2)
+      rspec-core (~> 3.10)
+      rspec-expectations (~> 3.10)
+      rspec-mocks (~> 3.10)
+      rspec-support (~> 3.10)
+    rspec-support (3.11.0)
     semantic_range (3.0.0)
     sprockets (4.1.1)
       concurrent-ruby (~> 1.0)
@@ -189,13 +200,14 @@ PLATFORMS
 
 DEPENDENCIES
   bootsnap
-  debug
+  byebug
   importmap-rails
   jbuilder
   pg (~> 1.4.2)
   puma (~> 5.0)
   rails (~> 7.0.3, >= 7.0.3.1)
   redis (~> 4.7.1)
+  rspec-rails (~> 5.1.2)
   sprockets-rails
   tzinfo-data
   web-console

@@ -69,6 +69,13 @@ Managing production deployments of your application can be [orchestrated] using
 [orchestrated]: https://docs.docker.com/get-started/orchestration/
 [Docker Swarm]: https://docs.docker.com/get-started/swarm-deploy/
 
+## Common CLI Commands
+
+```bash
+# Run rspec tests
+docker-compose exec web bin/rails spec
+```
+
 ## Managing Containers
 
 ```bash
@@ -81,6 +88,9 @@ docker-compose build web
 
 # Recreate 'web' container from rebuild image
 docker-compose up -d web
+
+# Force recreation of 'web' container
+docker-compose up -d --force-recreate web
 
 # restart node
 docker-compose restart web
