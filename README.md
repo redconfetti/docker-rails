@@ -72,6 +72,9 @@ Managing production deployments of your application can be [orchestrated] using
 ## Common CLI Commands
 
 ```bash
+# Run Rails console in web container
+docker-compose exec web bin/rails console
+
 # Build and recreate for 'bundle install'
 docker-compose build web
 docker-compose stop web
