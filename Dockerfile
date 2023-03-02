@@ -10,6 +10,8 @@ ADD https://dl.yarnpkg.com/debian/pubkey.gpg /tmp/yarn-pubkey.gpg
 RUN apt-key add /tmp/yarn-pubkey.gpg && rm /tmp/yarn-pubkey.gpg
 RUN echo 'deb http://dl.yarnpkg.com/debian/ stable main' > /etc/apt/sources.list.d/yarn.list
 
+ENTRYPOINT ["./docker-entrypoint.sh"]
+
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
     nodejs \
     yarn

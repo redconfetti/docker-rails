@@ -21,6 +21,10 @@ application are brought up and running:
 ```bash
 # Bring up all docker containers in detached mode
 docker-compose up -d
+
+# Bring up all docker containers without detached mode
+# requires CTRL+C to stop all
+docker-compose up
 ```
 
 [Docker Desktop]: https://formulae.brew.sh/cask/docker
