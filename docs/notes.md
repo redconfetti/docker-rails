@@ -130,18 +130,57 @@ setup for the front-end.
 rails new myapp --webpack=react --api --skip-hotwire --skip-jbuilder --skip-asset-pipeline --database=postgresql
 ```
 
+## Tagging for an Alternative Registry
+
+I'm wanting to use Digital Ocean's container registry to host my Docker images.
+It appears that I just need to tag them to include the docker registry server
+hostname.
+
+```bash
+$ doctl registry login
+Logging Docker in to registry.digitalocean.com
+
+$ docker build -f Dockerfile.prod -t registry.digitalocean.com/redconfetti/rails_app:prod .
+
+$ docker image ls
+REPOSITORY                                        TAG       IMAGE ID       CREATED          SIZE
+registry.digitalocean.com/redconfetti/rails_app   prod      81a99b625c6e   14 seconds ago   1.2GB
+
+$ docker push registry.digitalocean.com/redconfetti/rails_app:prod
+```
+
 ## Docker Machine
 
 On page 156 of _Docker for Rails Developers_ it instructs to run the command
-`docker-machine-create --driver virtualbox local-vm-1`. This command is no
+`docker-machine-create --driver virtualbox local-vm-1`. This command, intended
+to help you setup a Docker Engine node locally under Virtualbox, is no
 longer supported.
 
-[Docker Machine][] was maintained independently until about 4 years ago. Then it
-was moved to the [Docker-Toolbox], and then later
-[the Toolbox was deprecated][]. The [Boot2Docker] image used by Virtualbox for
-the Docker host, also is no longer maintained.
+Although [Docker Machine][] made it easy to provision Docker Engine servers
+for many cloud providers, it's main purpose was to support provisioning
+the [Boot2Docker] image under a Virtualbox guest machine. Once Docker Desktop
+was able to run natively on Mac and Windows machines, this functionality was
+no longer needed, and thus was [deprecated].
 
-Some features moved to the `docker swarm` command.
+> Machine was the only way to run Docker on Mac or Windows previous to Docker
+> v1.12. Starting with the beta program and Docker v1.12, Docker Desktop for
+> Mac and Docker Desktop for Windows are available as native apps and the
+> better choice for this use case on newer desktops and laptops.
+
+Note: Docker v1.12 also introduced swarm mode.
+
+To help provide an equivalent, I've created [local-docker] to help developers
+create Docker Engines under Virtualbox locally to experiment with Docker Swarm.
+
+[deprecated]: https://github.com/docker/machine/issues/4537
+[docker machine]: https://github.com/docker/machine
+[the toolbox was deprecated]: https://github.com/docker-archive/toolbox/blob/b70faff6/README.md
+[boot2docker]: https://github.com/boot2docker/boot2docker
+[local-docker]: https://github.com/redconfetti/local-docker
+
+## Docker Swarm
+
+Some features from Docker Machined moved under the `docker swarm` feature.
 
 ```shell
 # docker-machine init becomes
@@ -151,34 +190,15 @@ docker swarm init
 docker swarm join
 ```
 
-Docker itself maintains that Docker-Machine was only maintained to support
-provisioning a Docker node to Virtualbox, because Mac or Windows machines could
-not natively run the Docker Engine.
-
-> Machine was the only way to run Docker on Mac or Windows previous to Docker
-> v1.12. Starting with the beta program and Docker v1.12, Docker Desktop for
-> Mac and Docker Desktop for Windows are available as native apps and the
-> better choice for this use case on newer desktops and laptops.
-
-Docker v1.12 also introduced swarm mode.
-
-Provisioning to Virtualbox would be nice to test our the Swarm functionality
-locally, but it sounds like using Vagrant, or manually provisioning is adequate.
-
 ### References
 
-* [Docker Machine is now in maintenance mode][dm-4537]
-* [Boot2Docker - Add deprecation notice][btd-1408]
 * [Swarm Mode Overview][]
 * [Swarm Mode Key Concepts][]
+* [Swarm Tutorial][]
 
-[docker machine]: https://github.com/docker/machine
 [Swarm Mode Overview]: https://docs.docker.com/engine/swarm/
 [swarm mode key concepts]: https://docs.docker.com/engine/swarm/key-concepts/
-[the toolbox was deprecated]: https://github.com/docker-archive/toolbox/blob/b70faff6/README.md
-[boot2docker]: https://github.com/boot2docker/boot2docker
-[dm-4537]: https://github.com/docker/machine/issues/4537
-[btd-1408]: https://github.com/boot2docker/boot2docker/pull/1408
+[Swarm Tutorial]: https://docs.docker.com/engine/swarm/swarm-tutorial/create-swarm/
 
 ## Podman
 
@@ -192,3 +212,43 @@ brew install podman-desktop
 
 [podman desktop]: https://podman-desktop.io/
 [docker desktop]: https://www.docker.com/products/docker-desktop/
+
+## Deploying Swarm
+
+```bash
+$ docker stack deploy -c docker-stack.yml rails_app
+Creating network rails_app_default
+Creating service rails_app_web
+Creating service rails_app_redis
+Creating service rails_app_database
+
+$ docker stack services rails_app
+ID             NAME                    MODE         REPLICAS   IMAGE                                                  PORTS
+q23mtpmqb96d   rails_app_database      replicated   1/1        postgres:latest                                        
+n1g5fr3ddquz   rails_app_db-migrator   replicated   0/1        registry.digitalocean.com/redconfetti/rails_app:prod   
+lrdl782x2ff3   rails_app_redis         replicated   1/1        redis:latest                                           
+j7j3svit6wgy   rails_app_web           replicated   1/1        registry.digitalocean.com/redconfetti/rails_app:prod   *:80->3000/tcp
+
+$ docker stack rm rails_app
+Removing service rails_app_database
+Removing service rails_app_db-migrator
+Removing service rails_app_redis
+Removing service rails_app_web
+Removing network rails_app_default
+
+$ docker service logs rails_app_web
+rails_app_web.1.g4tzcqstd323@docker-desktop    | => Booting Puma
+rails_app_web.1.g4tzcqstd323@docker-desktop    | => Rails 7.0.3.1 application starting in production 
+rails_app_web.1.g4tzcqstd323@docker-desktop    | => Run `bin/rails server --help` for more startup options
+rails_app_web.1.g4tzcqstd323@docker-desktop    | Puma starting in single mode...
+rails_app_web.1.g4tzcqstd323@docker-desktop    | * Puma version: 5.6.4 (ruby 3.0.4-p208) ("Birdie's Version")
+rails_app_web.1.g4tzcqstd323@docker-desktop    | *  Min threads: 5
+rails_app_web.1.g4tzcqstd323@docker-desktop    | *  Max threads: 5
+rails_app_web.1.g4tzcqstd323@docker-desktop    | *  Environment: production
+rails_app_web.1.g4tzcqstd323@docker-desktop    | *          PID: 1
+rails_app_web.1.g4tzcqstd323@docker-desktop    | * Listening on http://0.0.0.0:3000
+rails_app_web.1.g4tzcqstd323@docker-desktop    | Use Ctrl-C to stop
+```
+
+I'm noticing that my stack is not deploying to the Vagrant managed servers
+but instead `@docker-desktop`.

@@ -11,6 +11,7 @@ RUN apt-key add /tmp/yarn-pubkey.gpg && rm /tmp/yarn-pubkey.gpg
 RUN echo 'deb http://dl.yarnpkg.com/debian/ stable main' > /etc/apt/sources.list.d/yarn.list
 
 RUN apt-get update -yqq && apt-get install -yqq --no-install-recommends \
+    netcat \
     nodejs \
     yarn
 
@@ -20,6 +21,8 @@ WORKDIR /usr/src/app
 RUN bundle install
 
 COPY . /usr/src/app
+
+RUN ["chmod", "+x", "/usr/src/app/wait-for"]
 
 RUN bin/rails assets:precompile
 
