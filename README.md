@@ -158,4 +158,6 @@ doctl account get
 doctl registry login
 ```
 
+* [Digital Ocean - Container Registry](https://docs.digitalocean.com/products/container-registry/quickstart/)
+
 [doctl]: https://docs.digitalocean.com/reference/doctl/
