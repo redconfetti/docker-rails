@@ -129,3 +129,66 @@ setup for the front-end.
 ```bash
 rails new myapp --webpack=react --api --skip-hotwire --skip-jbuilder --skip-asset-pipeline --database=postgresql
 ```
+
+## Docker Machine
+
+On page 156 of _Docker for Rails Developers_ it instructs to run the command
+`docker-machine-create --driver virtualbox local-vm-1`. This command is no
+longer supported.
+
+[Docker Machine][] was maintained independently until about 4 years ago. Then it
+was moved to the [Docker-Toolbox], and then later
+[the Toolbox was deprecated][]. The [Boot2Docker] image used by Virtualbox for
+the Docker host, also is no longer maintained.
+
+Some features moved to the `docker swarm` command.
+
+```shell
+# docker-machine init becomes
+docker swarm init
+
+# docker-machine join becomes
+docker swarm join
+```
+
+Docker itself maintains that Docker-Machine was only maintained to support
+provisioning a Docker node to Virtualbox, because Mac or Windows machines could
+not natively run the Docker Engine.
+
+> Machine was the only way to run Docker on Mac or Windows previous to Docker
+> v1.12. Starting with the beta program and Docker v1.12, Docker Desktop for
+> Mac and Docker Desktop for Windows are available as native apps and the
+> better choice for this use case on newer desktops and laptops.
+
+Docker v1.12 also introduced swarm mode.
+
+Provisioning to Virtualbox would be nice to test our the Swarm functionality
+locally, but it sounds like using Vagrant, or manually provisioning is adequate.
+
+### References
+
+* [Docker Machine is now in maintenance mode][dm-4537]
+* [Boot2Docker - Add deprecation notice][btd-1408]
+* [Swarm Mode Overview][]
+* [Swarm Mode Key Concepts][]
+
+[docker machine]: https://github.com/docker/machine
+[Swarm Mode Overview]: https://docs.docker.com/engine/swarm/
+[swarm mode key concepts]: https://docs.docker.com/engine/swarm/key-concepts/
+[the toolbox was deprecated]: https://github.com/docker-archive/toolbox/blob/b70faff6/README.md
+[boot2docker]: https://github.com/boot2docker/boot2docker
+[dm-4537]: https://github.com/docker/machine/issues/4537
+[btd-1408]: https://github.com/boot2docker/boot2docker/pull/1408
+
+## Podman
+
+Docker charges for certain services, and so a movement to create open source
+equivalents have mobilized. One replacement, for developers to use, is
+to use [Podman Desktop][] instead of [Docker Desktop][].
+
+```shell
+brew install podman-desktop
+```
+
+[podman desktop]: https://podman-desktop.io/
+[docker desktop]: https://www.docker.com/products/docker-desktop/
