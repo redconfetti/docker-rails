@@ -11,8 +11,7 @@ services:
 
   db-migrator:
     image: registry.digitalocean.com/redconfetti/rails_app:prod
-    command: ["echo", "hello"]
-    # command: ["./wait-for", "--timeout=300", "database:5432", "--", "bin/rails", "db:migrate"]
+    command: ["./wait-for", "--timeout=300", "database:5432", "--", "bin/rails", "db:migrate"]
     env_file:
       - .env/production/database
       - .env/production/web
