@@ -4,5 +4,6 @@ class WelcomeController < ApplicationController
     redis.incr "page hits"
 
     @page_hits = redis.get "page hits"
+    @hostname = Socket.gethostname
   end
 end

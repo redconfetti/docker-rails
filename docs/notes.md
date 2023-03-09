@@ -440,6 +440,13 @@ igbrinvzg2ir   rails_app_db-migrator   replicated   0/1        registry.digitalo
 347jg25gqw7j   rails_app_redis         replicated   1/1        redis:latest                                           
 xg7s6r2yy43b   rails_app_web           replicated   1/1        registry.digitalocean.com/redconfetti/rails_app:prod   *:80->3000/tcp
 
+# list services
+$ docker stack ps rails_app
+
+# list tasks for a specific service
+$ docker service ps rails_app_web
+
+# remove / shutdown a stack
 $ docker stack rm rails_app
 Removing service rails_app_database
 Removing service rails_app_db-migrator
