@@ -390,8 +390,8 @@ rpi
 vagrant-stack
 
 # looks like I need to switch contexts using doctl also
-$ doctl auth switch vagrant-stack
-Now using context [default] by default
+$ doctl auth switch --context vagrant-stack
+Now using context [vagrant-stack] by default
 
 $ doctl registry login
 Logging Docker in to registry.digitalocean.com
@@ -454,3 +454,84 @@ Removing service rails_app_redis
 Removing service rails_app_web
 Removing network rails_app_default
 ```
+
+I ran into an issue where trying to deploy to the remote Docker engine
+resulted in errors concerning my image hosted on the Digital Ocean registry.
+
+```bash
+$ docker stack deploy -c docker-stack.yml rails_app
+Updating service rails_app_redis (id: t7o7z8wycurgst9f6ypu7mbco)
+Updating service rails_app_database (id: llm07wjgtnpdjpm7ir9qzuy6g)
+Updating service rails_app_web (id: ihr5fs8lfieec9m34p572m8n4)
+image registry.digitalocean.com/redconfetti/rails_app:prod could not be accessed on a registry to record
+its digest. Each node will access registry.digitalocean.com/redconfetti/rails_app:prod independently,
+possibly leading to different nodes running different
+versions of the image.
+
+Updating service rails_app_db-migrator (id: ki0nmd5t1zveu1irk2kdu4qla)
+image registry.digitalocean.com/redconfetti/rails_app:prod could not be accessed on a registry to record
+its digest. Each node will access registry.digitalocean.com/redconfetti/rails_app:prod independently,
+possibly leading to different nodes running different
+versions of the image.
+
+$ docker stack deploy -c docker-stack.yml rails_app --with-registry-auth
+Updating service rails_app_db-migrator (id: ki0nmd5t1zveu1irk2kdu4qla)
+Updating service rails_app_redis (id: t7o7z8wycurgst9f6ypu7mbco)
+Updating service rails_app_database (id: llm07wjgtnpdjpm7ir9qzuy6g)
+Updating service rails_app_web (id: ihr5fs8lfieec9m34p572m8n4)
+```
+
+I just needed to add `--with-registry-auth` to ensure that my local
+[credentials are passed to the Docker daemon][with-registry-auth].
+
+[with-registry-auth]: https://github.com/moby/moby/issues/34153#issuecomment-316047924
+
+Here's a command to update the image for a single service.
+
+```bash
+$ docker service update --image registry.digitalocean.com/redconfetti/rails_app:prod rails_app_web
+```
+
+## Scaling the App
+
+```bash
+$ docker service scale rails_app_web=3
+
+rails_app_web scaled to 3
+overall progress: 3 out of 3 tasks 
+1/3: running   [==================================================>] 
+2/3: running   [==================================================>] 
+3/3: running   [==================================================>] 
+verify: Service converged
+
+$ docker service ls
+ID             NAME                    MODE         REPLICAS   IMAGE                                                  PORTS
+llm07wjgtnpd   rails_app_database      replicated   1/1        postgres:latest                                        
+ki0nmd5t1zve   rails_app_db-migrator   replicated   0/1        registry.digitalocean.com/redconfetti/rails_app:prod   
+t7o7z8wycurg   rails_app_redis         replicated   1/1        redis:latest                                           
+ihr5fs8lfiee   rails_app_web           replicated   3/3        registry.digitalocean.com/redconfetti/rails_app:prod   *:80->3000/tcp
+```
+
+## Deploying to the Cloud
+
+I'm already pushing my Docker images to a Digital Ocean registry, it makes
+sense that I push to a Docker host with them.
+
+Because Docker-Machine doesn't exist anymore, I'll be setting up an Ubuntu
+droplet with Digital Ocean, and provisioning the Docker Engine and other
+configurations to it by adopting the 'docker' role from my [local-pi]
+configuration. It's already setup to apply a playbook against a machine with the
+IP address and port specified in the host.yml file. The main difference is that
+I have to run the following and modify the architecture and release name for
+the [Ubuntu package repository].
+
+```bash
+$ dpkg --print-architecture
+amd64
+
+$ lsb_release -cs
+buster
+```
+
+[ubuntu package repository]: https://docs.docker.com/engine/install/ubuntu/
+[local-pi]: https://github.com/redconfetti/local-pi/blob/main/hosts.yml
